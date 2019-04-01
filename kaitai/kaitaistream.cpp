@@ -1,25 +1,45 @@
 #include <kaitai/kaitaistream.h>
 
-#if defined(__APPLE__)
+#if defined(__APPLE__)  // APPLE
 #include <machine/endian.h>
 #include <libkern/OSByteOrder.h>
 #define bswap_16(x) OSSwapInt16(x)
 #define bswap_32(x) OSSwapInt32(x)
 #define bswap_64(x) OSSwapInt64(x)
-#define __BYTE_ORDER    BYTE_ORDER
-#define __BIG_ENDIAN    BIG_ENDIAN
 #define __LITTLE_ENDIAN LITTLE_ENDIAN
-#elif defined(_MSC_VER) // !__APPLE__
+#define __BIG_ENDIAN    BIG_ENDIAN
+#define __BYTE_ORDER    BYTE_ORDER
+#elif defined(_WIN32) // WINDOWS
 #include <stdlib.h>
-#define __LITTLE_ENDIAN     1234
-#define __BIG_ENDIAN        4321
-#define __BYTE_ORDER        __LITTLE_ENDIAN
+#define __LITTLE_ENDIAN 1234
+#define __BIG_ENDIAN    4321
+#define __BYTE_ORDER    __LITTLE_ENDIAN
 #define bswap_16(x) _byteswap_ushort(x)
 #define bswap_32(x) _byteswap_ulong(x)
 #define bswap_64(x) _byteswap_uint64(x)
-#else // !__APPLE__ or !_MSC_VER
+#elif defined(__linux__) // LINUX
 #include <endian.h>
 #include <byteswap.h>
+#else // default
+#define __LITTLE_ENDIAN 1234
+#define __BIG_ENDIAN    4321
+#define __BYTE_ORDER    __LITTLE_ENDIAN
+#define bswap_16(x) \
+	((unsigned short int)((((x) >> 8) & 0xffu) | (((x) & 0xffu) << 8)))
+#define bswap_32(x) \
+    ((((x) & 0xff000000u) >> 24) \
+    |(((x) & 0x00ff0000u) >>  8) \
+    |(((x) & 0x0000ff00u) <<  8) \
+	|(((x) & 0x000000ffu) << 24))
+#define bswap_64(x) \
+    ((((x) & 0xff00000000000000ull) >> 56) \
+    |(((x) & 0x00ff000000000000ull) >> 40) \
+    |(((x) & 0x0000ff0000000000ull) >> 24) \
+    |(((x) & 0x000000ff00000000ull) >>  8) \
+    |(((x) & 0x00000000ff000000ull) <<  8) \
+    |(((x) & 0x0000000000ff0000ull) << 24) \
+    |(((x) & 0x000000000000ff00ull) << 40) \
+    |(((x) & 0x00000000000000ffull) << 56))
 #endif
 
 #include <iostream>

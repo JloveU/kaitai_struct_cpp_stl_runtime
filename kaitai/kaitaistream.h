@@ -39,6 +39,7 @@ public:
     kstream(const kstream& other);
 
     void set_stream(std::iostream* io);
+    std::iostream *get_stream() const;
 
     void close();
 

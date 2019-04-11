@@ -62,6 +62,11 @@ void kaitai::kstream::set_stream(std::iostream* io) {
     }
 }
 
+std::iostream *kaitai::kstream::get_stream() const
+{
+    return m_io;
+}
+
 void kaitai::kstream::init() {
     exceptions_enable();
     align_to_byte();

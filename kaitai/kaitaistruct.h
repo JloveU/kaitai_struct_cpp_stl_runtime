@@ -29,6 +29,26 @@ public:
     }
     virtual void _read() {}
     virtual void _write() {}
+
+    virtual void read(const std::string &str) {
+        auto original_stream = m__io->get_stream();
+
+        std::stringstream ss(str);
+        m__io->set_stream(&ss);
+        _read();
+
+        m__io->set_stream(original_stream);
+    }
+    virtual void write(std::string &str) {
+        auto original_stream = m__io->get_stream();
+
+        std::stringstream ss;
+        m__io->set_stream(&ss);
+        _write();
+        str = ss.str();
+
+        m__io->set_stream(original_stream);
+    }
     virtual std::string to_string() const {
         return std::string();
     }

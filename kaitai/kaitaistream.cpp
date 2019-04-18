@@ -68,8 +68,15 @@ std::iostream *kaitai::kstream::get_stream() const
 }
 
 void kaitai::kstream::init() {
-    exceptions_enable();
-    align_to_byte();
+    try
+    {
+        exceptions_enable();
+        align_to_byte();
+    }
+    catch (std::exception &e)
+    {
+        std::cerr << "Exception occurred in kaitai::kstream::init(). " << e.what() << std::endl;
+    }
 }
 
 void kaitai::kstream::close() {

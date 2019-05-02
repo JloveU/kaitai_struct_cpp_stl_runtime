@@ -53,7 +53,7 @@ public:
         return std::string();
     }
     virtual std::string to_json() const {
-        return std::string();
+        return std::string("{}");
     }
     virtual std::map<std::string, const void*> get_named_data() const {
         return std::map<std::string, const void*>();

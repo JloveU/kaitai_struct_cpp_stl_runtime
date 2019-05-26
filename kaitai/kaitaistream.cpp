@@ -45,6 +45,24 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+#include <iomanip>
+#include <cctype>
+#include <algorithm>
+
+
+static std::string printable(const std::string &str)
+{
+    std::stringstream ss;
+    const unsigned char *str_ = reinterpret_cast<const unsigned char *>(&str[0]);
+    const size_t size_ = str.size();
+    for (size_t i = 0; i < size_; ++i)
+    {
+        ss << "\\x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(str_[i]);
+    }
+
+    return ss.str();
+}
+
 
 kaitai::kstream::kstream(std::iostream* io): m_io(io) {
     if (m_io) {
@@ -619,7 +637,7 @@ std::string kaitai::kstream::ensure_fixed_contents(std::string expected) {
 
     if (actual != expected) {
         // NOTE: I think printing it outright is not best idea, it could contain non-ascii charactes like backspace and beeps and whatnot. It would be better to print hexlified version, and also to redirect it to stderr.
-        throw std::runtime_error("ensure_fixed_contents: actual data does not match expected data");
+        throw std::runtime_error(std::string("ensure_fixed_contents: actual data does not match expected data") + " (expected='" + printable(expected) + "', actual='" + printable(actual) + "')");
     }
 
     return actual;
@@ -629,7 +647,7 @@ std::string kaitai::kstream::read_fixed_contents(std::string expected) {
     std::string actual = read_bytes(expected.length());
 
     if (actual != expected) {
-        throw std::runtime_error("read_fixed_contents: actual data does not match expected data");
+        throw std::runtime_error(std::string("read_fixed_contents: actual data does not match expected data") + " (expected='" + printable(expected) + "', actual='" + printable(actual) + "')");
     }
 
     return actual;
@@ -637,7 +655,7 @@ std::string kaitai::kstream::read_fixed_contents(std::string expected) {
 
 void kaitai::kstream::write_fixed_contents(const std::string &actual, std::string expected) {
     if (actual != expected) {
-        throw std::runtime_error("write_fixed_contents: actual data does not match expected data");
+        throw std::runtime_error(std::string("write_fixed_contents: actual data does not match expected data") + " (expected='" + printable(expected) + "', actual='" + printable(actual) + "')");
     }
 
     write_bytes(actual, expected.length());
